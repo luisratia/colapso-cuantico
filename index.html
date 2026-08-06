@@ -27,6 +27,9 @@
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
+    <!-- Plotly.js CDN para gráficos interactivos -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
     <style>
         :root {
             --bg-color: #ffffff;
@@ -154,6 +157,8 @@
             font-weight: 600;
             transition: all 0.2s ease;
             font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
         }
 
         .btn-primary {
@@ -206,6 +211,16 @@
             margin: 20px 0;
         }
 
+        .plot-container {
+            width: 100%;
+            height: 480px;
+            margin: 30px 0;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
         .table-wrapper {
             overflow-x: auto;
             margin: 30px 0;
@@ -243,6 +258,12 @@
             font-size: 0.9rem;
             color: #6c757d;
         }
+
+        @media print {
+            .actions-bar, footer, .plot-container {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body class="tex2jax_process">
@@ -264,19 +285,18 @@
             </div>
             
             <div class="actions-bar">
-    <button onclick="window.print()" class="btn btn-primary">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        Guardar o Imprimir en PDF
-    </button>
-    <a href="https://orcid.org/my-orcid?orcid=0009-0001-1431-2449" target="_blank" class="btn btn-outline">
-	
-        Perfil ORCID
-    </a>
-</div>
+                <button onclick="window.print()" class="btn btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Guardar / Imprimir PDF
+                </button>
+                <a href="https://orcid.org/0009-0002-8611-3705" target="_blank" class="btn btn-outline">
+                    Perfil ORCID
+                </a>
+            </div>
         </header>
 
         <section class="abstract">
@@ -299,6 +319,9 @@
             $$\frac{d\rho}{dt} = -\frac{i}{\hbar}[H_0, \rho] + \sum_k \gamma_k \left( L_k \rho L_k^\dagger - \frac{1}{2} \{ L_k^\dagger L_k, \rho \} \right)$$
 
             <p>Donde $L_k$ son los operadores de salto asociados a la transferencia de energía y momento con el medidor, y $\gamma_k$ son las tasas de acoplamiento. Las coherencias cuánticas (términos fuera de la diagonal $\rho_{ij}$) decaen según $\rho_{ij}(t) = \rho_{ij}(0) e^{-\Gamma t}$.</p>
+
+            <!-- Gráfico Interactivo de Lindblad -->
+            <div id="lindbladPlot" class="plot-container"></div>
 
             <h3>2.2. Condición del Umbral Energético Crítico</h3>
             <p>Se define la energía disipada acumulada $E_{\text{dis}}(t)$ desde el sistema hacia el entorno como:</p>
@@ -330,6 +353,9 @@
             <p>La integral de disipación combinada con el umbral da como resultado la fórmula analítica explícita para el tiempo de colapso:</p>
 
             $$\tau_{\text{colapso}}(x, \Phi_E) = \frac{1}{x} \frac{\hbar}{\sqrt{2 \sigma_{\text{tot}} \Phi_E}}$$
+
+            <!-- Gráfico Interactivo de Tiempo de Colapso -->
+            <div id="collapseTimePlot" class="plot-container"></div>
 
             <ul>
                 <li><strong>Proporcionalidad inversa a la distancia ($1/x$):</strong> Superposiciones macroscópicas colapsan de forma ultrarrápida.</li>
@@ -446,5 +472,130 @@
         </footer>
     </div>
 
+    <!-- Script para renderizar las gráficas de Plotly.js -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const fontColor = isDarkMode ? '#e0e0e0' : '#212529';
+            const gridColor = isDarkMode ? '#333333' : '#dee2e6';
+            const bgColor = isDarkMode ? '#1e1e1e' : '#f8f9fa';
+
+            // --- GRÁFICO 1: TIEMPO DE COLAPSO VS SEPARACIÓN ESPACIAL ---
+            const hbar = 1.0545718e-34;
+            const distances = [];
+            const tauElectron = [];
+            const tauC60 = [];
+            const tauThreshold = [];
+
+            // Generar puntos logarítmicos desde 10^-10 m hasta 10^-3 m
+            for (let i = -10; i <= -3; i += 0.1) {
+                const x = Math.pow(10, i);
+                distances.push(x);
+                
+                // Electrón: sigma = 6.65e-29, Phi_E = 1e-3
+                const tauE = hbar / (x * Math.sqrt(2 * 6.65e-29 * 1e-3));
+                tauElectron.push(tauE);
+
+                // C60: sigma = 1e-18, Phi_E = 400
+                const tauC = hbar / (x * Math.sqrt(2 * 1e-18 * 400));
+                tauC60.push(tauC);
+
+                tauThreshold.push(1.0); // 1 segundo como umbral
+            }
+
+            const traceElectron = {
+                x: distances,
+                y: tauElectron,
+                mode: 'lines',
+                name: 'Electrón Individual (Micro)',
+                line: { color: '#0d6efd', width: 3 }
+            };
+
+            const traceC60 = {
+                x: distances,
+                y: tauC60,
+                mode: 'lines',
+                name: 'Fullereno C60 (Mesoscópico)',
+                line: { color: '#dc3545', width: 3 }
+            };
+
+            const traceThreshold = {
+                x: distances,
+                y: tauThreshold,
+                mode: 'lines',
+                name: 'Umbral de Coherencia (1 s)',
+                line: { color: '#ffc107', width: 2, dash: 'dash' }
+            };
+
+            const layout1 = {
+                title: { text: '<b>Tiempo de Colapso (τ) vs. Separación Espacial (x)</b>', font: { color: fontColor, size: 16 } },
+                xaxis: { title: 'Separación Espacial x (m)', type: 'log', color: fontColor, gridcolor: gridColor },
+                yaxis: { title: 'Tiempo de Colapso τ (s)', type: 'log', color: fontColor, gridcolor: gridColor },
+                paper_bgcolor: bgColor,
+                plot_bgcolor: bgColor,
+                legend: { font: { color: fontColor }, orientation: 'h', y: -0.25 },
+                margin: { t: 50, b: 80, l: 65, r: 30 }
+            };
+
+            Plotly.newPlot('collapseTimePlot', [traceElectron, traceC60, traceThreshold], layout1, {responsive: true});
+
+
+            // --- GRÁFICO 2: DINÁMICA DE LINDBLAD Y DECAIMIENTO DE COHERENCIA ---
+            const times = [];
+            const rho12 = [];
+            const rho11 = [];
+            const rho22 = [];
+
+            // Simulación simplificada de Lindblad + Transición Estocástica
+            for (let t = 0; t <= 5; t += 0.05) {
+                times.push(t);
+                // Decaimiento exponencial del elemento fuera de la diagonal (Coherencia)
+                const coherence = Math.exp(-1.5 * t);
+                rho12.push(coherence);
+
+                // Evolución estocástica de poblaciones convergiendo a autoestado 1
+                const p1 = 0.5 + 0.5 * (1 - Math.exp(-1.2 * t)) + 0.04 * Math.sin(5 * t) * Math.exp(-0.8 * t);
+                const p2 = 1 - p1;
+                rho11.push(Math.min(1, Math.max(0, p1)));
+                rho22.push(Math.min(1, Math.max(0, p2)));
+            }
+
+            const traceRho12 = {
+                x: times,
+                y: rho12,
+                mode: 'lines',
+                name: 'Coherencia Cuántica |ρ₁₂| (Off-diagonal)',
+                line: { color: '#6f42c1', width: 3 }
+            };
+
+            const traceRho11 = {
+                x: times,
+                y: rho11,
+                mode: 'lines',
+                name: 'Población Autoestado 1 (ρ₁₁)',
+                line: { color: '#198754', width: 2, dash: 'dot' }
+            };
+
+            const traceRho22 = {
+                x: times,
+                y: rho22,
+                mode: 'lines',
+                name: 'Población Autoestado 2 (ρ₂₂)',
+                line: { color: '#fd7e14', width: 2, dash: 'dot' }
+            };
+
+            const layout2 = {
+                title: { text: '<b>Evolución Temporal de la Matriz de Densidad ρ(t)</b>', font: { color: fontColor, size: 16 } },
+                xaxis: { title: 'Tiempo Adimensional (t / τ_colapso)', color: fontColor, gridcolor: gridColor },
+                yaxis: { title: 'Magnitud de Elementos de ρ', color: fontColor, gridcolor: gridColor, range: [-0.05, 1.05] },
+                paper_bgcolor: bgColor,
+                plot_bgcolor: bgColor,
+                legend: { font: { color: fontColor }, orientation: 'h', y: -0.25 },
+                margin: { t: 50, b: 80, l: 65, r: 30 }
+            };
+
+            Plotly.newPlot('lindbladPlot', [traceRho12, traceRho11, traceRho22], layout2, {responsive: true});
+        });
+    </script>
 </body>
 </html>
