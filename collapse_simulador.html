@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cámara de Colapso — Simulador del Umbral de Disipación Energética</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0E13;
+    --panel:#121820;
+    --panel-2:#0E1319;
+    --border:#20293380;
+    --border-solid:#232E39;
+    --text:#E7EDF3;
+    --text-dim:#8493A3;
+    --text-faint:#556575;
+    --cyan:#4FD8C4;
+    --cyan-dim:#4FD8C433;
+    --amber:#E8A756;
+    --amber-dim:#E8A75633;
+    --violet:#C57DE0;
+    --violet-dim:#C57DE033;
+    --grid:#1B2430;
+    --danger:#E37D7D;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;}
+  ::selection{background:var(--cyan-dim);}
+
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px 80px;}
+
+  header.hero{padding:56px 0 28px;border-bottom:1px solid var(--border-solid);margin-bottom:36px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;}
+  h1{font-family:'Fraunces',serif;font-weight:500;font-style:italic;font-size:clamp(28px,4.4vw,46px);line-height:1.08;margin:0 0 16px;color:#F4F7FA;}
+  .lede{font-size:15.5px;line-height:1.6;color:var(--text-dim);max-width:640px;margin:0 0 8px;}
+  .lede b{color:var(--text);font-weight:500;}
+
+  /* --- chamber animation --- */
+  .chamber{
+    margin-top:32px;background:radial-gradient(ellipse at 50% 30%, #0D1620 0%, #090C10 70%);
+    border:1px solid var(--border-solid);border-radius:2px;
+    padding:0;overflow:hidden;position:relative;
+  }
+  .chamber-label{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:12px 18px;border-bottom:1px solid var(--border-solid);
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--text-faint);
+    text-transform:uppercase;
+  }
+  .chamber-label .state{color:var(--cyan);}
+  .chamber-label .state.collapsed{color:var(--amber);}
+  canvas#chamberCanvas{display:block;width:100%;height:220px;}
+  .chamber-readout{
+    display:flex;gap:28px;padding:14px 18px;border-top:1px solid var(--border-solid);
+    font-family:'IBM Plex Mono',monospace;font-size:13px;flex-wrap:wrap;
+  }
+  .chamber-readout .item .k{color:var(--text-faint);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:3px;}
+  .chamber-readout .item .v{color:var(--cyan);font-size:16px;}
+
+  /* --- panels --- */
+  .panel{background:var(--panel);border:1px solid var(--border-solid);border-radius:2px;padding:26px 26px 22px;margin-bottom:22px;}
+  .panel h2{font-family:'Fraunces',serif;font-weight:500;font-size:19px;margin:0 0 4px;color:#F0F4F7;}
+  .panel .sub{font-size:13px;color:var(--text-faint);margin:0 0 22px;}
+
+  .controls{display:grid;grid-template-columns:1fr 1fr;gap:26px 32px;}
+  @media(max-width:640px){.controls{grid-template-columns:1fr;}}
+  .control label{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--text-dim);margin-bottom:10px;}
+  .control label .val{color:var(--cyan);}
+  input[type=range]{
+    -webkit-appearance:none;width:100%;height:2px;background:var(--border-solid);
+    border-radius:2px;outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:var(--cyan);cursor:pointer;border:2px solid #0A0E13;box-shadow:0 0 0 1px var(--cyan);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:14px;height:14px;border-radius:50%;background:var(--cyan);cursor:pointer;border:2px solid #0A0E13;
+  }
+  .ticklabels{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-faint);margin-top:6px;}
+
+  /* --- readout grid --- */
+  .readout-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border-solid);border:1px solid var(--border-solid);margin-top:6px;}
+  @media(max-width:640px){.readout-grid{grid-template-columns:1fr;}}
+  .readout-cell{background:var(--panel-2);padding:18px 18px 16px;}
+  .readout-cell .name{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint);margin-bottom:8px;}
+  .readout-cell .tau{font-family:'IBM Plex Mono',monospace;font-size:20px;color:var(--text);}
+  .readout-cell.this .name{color:var(--cyan);}
+  .readout-cell.this .tau{color:var(--cyan);}
+  .readout-cell.std .name{color:var(--amber);}
+  .readout-cell.dp .name{color:var(--violet);}
+
+  /* --- plots --- */
+  .plots{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  @media(max-width:760px){.plots{grid-template-columns:1fr;}}
+  .plot-box{background:var(--panel-2);border:1px solid var(--border-solid);padding:16px 16px 8px;}
+  .plot-box h3{font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);margin:0 0 12px;font-weight:500;}
+  canvas.plot{width:100%;height:220px;display:block;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:10px;height:2px;display:inline-block;}
+
+  .verdict{margin-top:20px;padding:16px 18px;border:1px solid var(--border-solid);background:var(--panel-2);font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.7;color:var(--text-dim);}
+  .verdict b{color:var(--cyan);}
+
+  footer{margin-top:10px;padding-top:22px;border-top:1px solid var(--border-solid);font-size:12px;color:var(--text-faint);line-height:1.7;}
+  footer a{color:var(--text-dim);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Postulado de Ratia · Simulador interactivo</div>
+    <h1>Cámara de colapso por disipación energética</h1>
+    <p class="lede">Este simulador calcula el tiempo de colapso <b>τ</b> de una nanoesfera en superposición cuántica, según el modelo de umbral de disipación, y lo contrasta en vivo contra decoherencia estándar y Diósi–Penrose. Mueve los controles para explorar las tres leyes de escalamiento verificadas del postulado.</p>
+  </header>
+
+  <div class="chamber">
+    <div class="chamber-label">
+      <span>Superposición — separación x, entorno Φ<sub>E</sub>, T</span>
+      <span class="state" id="chamberState">COHERENTE</span>
+    </div>
+    <canvas id="chamberCanvas"></canvas>
+    <div class="chamber-readout">
+      <div class="item"><span class="k">τ colapso</span><span class="v" id="tauMain">—</span></div>
+      <div class="item"><span class="k">x₀ (300K = 7.63 μm)</span><span class="v" id="x0Val">—</span></div>
+      <div class="item"><span class="k">σ_tot (Rayleigh)</span><span class="v" id="sigmaVal">—</span></div>
+      <div class="item"><span class="k">λ térmica (Wien)</span><span class="v" id="lambdaVal">—</span></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:22px;">
+    <h2>Controles del entorno</h2>
+    <p class="sub">Nanoesfera de sílice, R = 100 nm, n = 1.45 — parámetros de referencia del protocolo experimental.</p>
+    <div class="controls">
+      <div class="control">
+        <label>Separación x <span class="val" id="xLabel">100 nm</span></label>
+        <input type="range" id="xSlider" min="0" max="100" value="35">
+        <div class="ticklabels"><span>50 nm</span><span>1000 nm</span></div>
+      </div>
+      <div class="control">
+        <label>Flujo Φ<sub>E</sub> <span class="val" id="phiLabel">1×10⁻² W/m²</span></label>
+        <input type="range" id="phiSlider" min="0" max="100" value="50">
+        <div class="ticklabels"><span>10⁻⁶ W/m²</span><span>10² W/m²</span></div>
+      </div>
+      <div class="control">
+        <label>Temperatura T <span class="val" id="tLabel">300 K</span></label>
+        <input type="range" id="tSlider" min="0" max="100" value="100">
+        <div class="ticklabels"><span>4 K</span><span>300 K</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Lectura comparativa</h2>
+    <p class="sub">τ_colapso bajo los tres modelos, para los valores actuales de x, Φ_E y T. Diósi–Penrose y decoherencia estándar se normalizan al punto de referencia (x=100nm, Φ<sub>E</sub>=1 W/m²) y se extrapolan con su propia ley de potencia — no son valores derivados de primeros principios para este sistema exacto.</p>
+    <div class="readout-grid">
+      <div class="readout-cell this">
+        <div class="name">Disipación energética (τ ∝ x⁻¹ Φ⁻¹ᐟ²)</div>
+        <div class="tau" id="tauPostulate">—</div>
+      </div>
+      <div class="readout-cell std">
+        <div class="name">Decoherencia estándar (τ ∝ x⁻² Φ⁻¹)</div>
+        <div class="tau" id="tauStandard">—</div>
+      </div>
+      <div class="readout-cell dp">
+        <div class="name">Diósi–Penrose (independiente de Φ, T)</div>
+        <div class="tau" id="tauDP">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Leyes de escalamiento</h2>
+    <p class="sub">Curvas log–log verificadas. El punto marcado corresponde a los controles actuales.</p>
+    <div class="plots">
+      <div class="plot-box">
+        <h3>τ vs. separación x  (Φ<sub>E</sub>, T fijos al valor actual)</h3>
+        <canvas class="plot" id="plotX"></canvas>
+        <div class="legend">
+          <span><span class="swatch" style="background:var(--cyan)"></span>este postulado (x⁻¹)</span>
+          <span><span class="swatch" style="background:var(--amber)"></span>decoherencia estándar (x⁻²)</span>
+        </div>
+      </div>
+      <div class="plot-box">
+        <h3>τ vs. flujo Φ<sub>E</sub>  (x, T fijos al valor actual)</h3>
+        <canvas class="plot" id="plotPhi"></canvas>
+        <div class="legend">
+          <span><span class="swatch" style="background:var(--cyan)"></span>este postulado (Φ⁻¹ᐟ²)</span>
+          <span><span class="swatch" style="background:var(--amber)"></span>decoherencia estándar (Φ⁻¹)</span>
+          <span><span class="swatch" style="background:var(--violet)"></span>Diósi–Penrose (plano)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="verdict" id="verdictBox"></div>
+  </div>
+
+  <footer>
+    Fórmulas: τ = (x₀/x)·√(ℏ/(2σ_totΦ_E)), x₀ = ℏc/(k_BT), σ_tot vía dispersión de Rayleigh, λ vía ley de Wien.
+    Las curvas de decoherencia estándar y Diósi–Penrose se muestran normalizadas al punto de referencia para comparar
+    pendientes, no magnitudes absolutas independientes. Este simulador es una herramienta educativa/exploratoria del
+    <a href="index.html">Protocolo Experimental</a> — no sustituye una medición de laboratorio real.
+  </footer>
+
+</div>
+
+<script>
+// ---------- Física verificada (idéntica a la usada en el protocolo experimental) ----------
+const hbar = 1.054571817e-34;
+const c    = 2.99792458e8;
+const kB   = 1.380649e-23;
+const R    = 100e-9;
+const n_refr = 1.45;
+
+function lambdaThermal(T){ return 2.8977719e-3 / T; }
+function sigmaRayleigh(R, lam, n){
+  return (8*Math.PI/3) * Math.pow(2*Math.PI/lam,4) * Math.pow(R,6) * Math.pow((n*n-1)/(n*n+2),2);
+}
+function x0(T){ return hbar*c/(kB*T); }
+function tauPostulate(x, Phi, T){
+  const lam = lambdaThermal(T);
+  const sigma = sigmaRayleigh(R, lam, n_refr);
+  return (x0(T)/x) * Math.sqrt(hbar/(2*sigma*Phi));
+}
+
+// referencia para normalizar los modelos comparativos
+const X_REF = 100e-9, PHI_REF = 1, T_REF = 300;
+const TAU_REF = tauPostulate(X_REF, PHI_REF, T_REF);
+
+function tauStandard(x, Phi){
+  // tau ∝ x^-2 * Phi^-1, anclado en el mismo punto de referencia
+  return TAU_REF * Math.pow(x/X_REF, -2) * Math.pow(Phi/PHI_REF, -1);
+}
+function tauDP(){
+  // independiente de Phi y T en este barrido; se muestra como referencia plana
+  return TAU_REF;
+}
+
+// ---------- mapeo de sliders (escalas logarítmicas) ----------
+function xFromSlider(v){ // 50nm .. 1000nm, log
+  const lo = Math.log10(50e-9), hi = Math.log10(1000e-9);
+  return Math.pow(10, lo + (v/100)*(hi-lo));
+}
+function phiFromSlider(v){ // 1e-6 .. 100, log
+  const lo = Math.log10(1e-6), hi = Math.log10(100);
+  return Math.pow(10, lo + (v/100)*(hi-lo));
+}
+function tFromSlider(v){ // 4K .. 300K, log
+  const lo = Math.log10(4), hi = Math.log10(300);
+  return Math.pow(10, lo + (v/100)*(hi-lo));
+}
+
+function fmtSci(val, unit){
+  if (!isFinite(val)) return "—";
+  const exp = Math.floor(Math.log10(Math.abs(val)));
+  const mant = val/Math.pow(10,exp);
+  return `${mant.toFixed(2)}×10${exp>=0?'':''}${toSuperscript(exp)} ${unit||''}`.trim();
+}
+function toSuperscript(n){
+  const map={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+  return String(n).split('').map(ch=>map[ch]!==undefined?map[ch]:ch).join('');
+}
+function fmtLen(m){
+  if (m*1e9 < 1000) return (m*1e9).toFixed(0)+" nm";
+  return (m*1e6).toFixed(2)+" μm";
+}
+
+// ---------- estado ----------
+const xSlider = document.getElementById('xSlider');
+const phiSlider = document.getElementById('phiSlider');
+const tSlider = document.getElementById('tSlider');
+
+let state = { x: xFromSlider(+xSlider.value), phi: phiFromSlider(+phiSlider.value), T: tFromSlider(+tSlider.value) };
+
+function updateFromSliders(){
+  state.x = xFromSlider(+xSlider.value);
+  state.phi = phiFromSlider(+phiSlider.value);
+  state.T = tFromSlider(+tSlider.value);
+  render();
+}
+[xSlider, phiSlider, tSlider].forEach(el=>el.addEventListener('input', updateFromSliders));
+
+// ---------- render de texto ----------
+function render(){
+  document.getElementById('xLabel').textContent = fmtLen(state.x);
+  document.getElementById('phiLabel').textContent = fmtSci(state.phi,'W/m²');
+  document.getElementById('tLabel').textContent = state.T.toFixed(0)+" K";
+
+  const tau = tauPostulate(state.x, state.phi, state.T);
+  const tauStd = tauStandard(state.x, state.phi);
+  const tauDp = tauDP();
+
+  document.getElementById('tauMain').textContent = fmtSci(tau,'s');
+  document.getElementById('x0Val').textContent = fmtLen(x0(state.T));
+  document.getElementById('sigmaVal').textContent = fmtSci(sigmaRayleigh(R, lambdaThermal(state.T), n_refr), 'm²');
+  document.getElementById('lambdaVal').textContent = fmtLen(lambdaThermal(state.T));
+
+  document.getElementById('tauPostulate').textContent = fmtSci(tau,'s');
+  document.getElementById('tauStandard').textContent = fmtSci(tauStd,'s');
+  document.getElementById('tauDP').textContent = fmtSci(tauDp,'s');
+
+  const ratio = tauStd/tau;
+  const verdict = document.getElementById('verdictBox');
+  verdict.innerHTML = `A estos valores, el postulado predice colapso <b>${ratio>1? (ratio.toFixed(1)+'× más rápido'):( (1/ratio).toFixed(1)+'× más lento')}</b> que la decoherencia estándar (x⁻²), y <b>${(tauDp/tau).toFixed(1)}×</b> distinto de la referencia plana de Diósi–Penrose. Esta separación entre curvas es la señal que un experimento real tendría que resolver — ver Sección 5 del protocolo.`;
+
+  drawChamber(tau);
+  drawPlotX();
+  drawPlotPhi();
+}
+
+// ---------- animación de la cámara (visualización de coherencia -> colapso) ----------
+const chCanvas = document.getElementById('chamberCanvas');
+const chCtx = chCanvas.getContext('2d');
+let animStart = performance.now();
+const ANIM_PERIOD_MS = 3200; // ciclo visual fijo; tau solo determina CUÁNDO ocurre el "colapso" dentro del ciclo
+
+function fitCanvas(canvas){
+  const ratio = window.devicePixelRatio||1;
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  canvas.width = w*ratio; canvas.height = h*ratio;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(ratio,0,0,ratio,0,0);
+}
+
+function drawChamber(tau){
+  fitCanvas(chCanvas);
+  const w = chCanvas.clientWidth, h = chCanvas.clientHeight;
+  const t = (performance.now()-animStart)%ANIM_PERIOD_MS / ANIM_PERIOD_MS; // 0..1
+
+  // mapear tau (log) a fraccion del ciclo donde ocurre el colapso: tau grande -> colapsa tarde, tau chico -> colapsa temprano
+  const logTau = Math.log10(tau);
+  const collapseFrac = clamp( (logTau + 12) / 15, 0.08, 0.92 ); // rango aprox -12..3 en log10(s)
+
+  const collapsed = t > collapseFrac;
+  document.getElementById('chamberState').textContent = collapsed? 'COLAPSADO' : 'COHERENTE';
+  document.getElementById('chamberState').className = 'state' + (collapsed? ' collapsed':'');
+
+  chCtx.clearRect(0,0,w,h);
+
+  // grid de fondo
+  chCtx.strokeStyle = '#16202B';
+  chCtx.lineWidth = 1;
+  for(let gx=0; gx<w; gx+=28){ chCtx.beginPath(); chCtx.moveTo(gx,0); chCtx.lineTo(gx,h); chCtx.stroke(); }
+
+  const cy = h/2;
+  const decayProgress = collapsed ? Math.min(1,(t-collapseFrac)/0.08) : 0;
+  const amp = 34 * (1-decayProgress);
+  const sep = 20 + 20*decayProgress; // los dos paquetes se funden visualmente al colapsar
+
+  chCtx.lineWidth = 1.6;
+
+  // paquete 1
+  drawWave(w,cy - sep*(1-decayProgress), amp, t, '#4FD8C4', 1-decayProgress*0.2);
+  // paquete 2
+  drawWave(w,cy + sep*(1-decayProgress), amp, t, '#4FD8C4', 1-decayProgress*0.2);
+
+  if (collapsed){
+    // punto colapsado
+    const alpha = Math.min(1, decayProgress*1.6);
+    chCtx.fillStyle = `rgba(232,167,86,${alpha})`;
+    chCtx.beginPath();
+    chCtx.arc(w*0.62, cy, 3.5, 0, Math.PI*2);
+    chCtx.fill();
+    chCtx.strokeStyle = `rgba(232,167,86,${alpha*0.5})`;
+    chCtx.beginPath();
+    chCtx.arc(w*0.62, cy, 9+3*Math.sin(t*40), 0, Math.PI*2);
+    chCtx.stroke();
+  }
+}
+function drawWave(w, cy, amp, t, color, alpha){
+  chCtx.beginPath();
+  chCtx.strokeStyle = color;
+  chCtx.globalAlpha = alpha;
+  for(let x=0;x<=w;x+=3){
+    const y = cy + amp*Math.sin(x*0.05 + t*14);
+    if (x===0) chCtx.moveTo(x,y); else chCtx.lineTo(x,y);
+  }
+  chCtx.stroke();
+  chCtx.globalAlpha = 1;
+}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+
+function loop(){
+  drawChamber(tauPostulate(state.x, state.phi, state.T));
+  requestAnimationFrame(loop);
+}
+
+// ---------- plots log-log ----------
+function drawLogLogAxes(ctx, w, h, xLabel, yLabel){
+  ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle = '#1B2430';
+  ctx.lineWidth = 1;
+  const margin = {l:12,r:12,t:8,b:8};
+  ctx.beginPath();
+  ctx.moveTo(margin.l, h-margin.b); ctx.lineTo(w-margin.r, h-margin.b);
+  ctx.moveTo(margin.l, margin.t); ctx.lineTo(margin.l, h-margin.b);
+  ctx.stroke();
+  return margin;
+}
+
+function drawCurve(ctx, xs, ys, w, h, margin, xMin, xMax, yMin, yMax, color, current){
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.8;
+  xs.forEach((xv,i)=>{
+    const px = margin.l + (Math.log10(xv)-Math.log10(xMin))/(Math.log10(xMax)-Math.log10(xMin)) * (w-margin.l-margin.r);
+    const py = (h-margin.b) - (Math.log10(ys[i])-Math.log10(yMin))/(Math.log10(yMax)-Math.log10(yMin)) * (h-margin.t-margin.b);
+    if (i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  });
+  ctx.stroke();
+}
+
+function drawPoint(ctx, xv, yv, w, h, margin, xMin, xMax, yMin, yMax, color){
+  const px = margin.l + (Math.log10(xv)-Math.log10(xMin))/(Math.log10(xMax)-Math.log10(xMin)) * (w-margin.l-margin.r);
+  const py = (h-margin.b) - (Math.log10(yv)-Math.log10(yMin))/(Math.log10(yMax)-Math.log10(yMin)) * (h-margin.t-margin.b);
+  ctx.beginPath();
+  ctx.fillStyle = color;
+  ctx.arc(px,py,4,0,Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle = '#0A0E13';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+}
+
+function drawPlotX(){
+  const canvas = document.getElementById('plotX');
+  fitCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  const margin = drawLogLogAxes(ctx,w,h);
+
+  const xMin=50e-9, xMax=1000e-9;
+  const N=40;
+  const xs = Array.from({length:N}, (_,i)=> xMin*Math.pow(xMax/xMin, i/(N-1)));
+  const ysPost = xs.map(xv=>tauPostulate(xv, state.phi, state.T));
+  const ysStd  = xs.map(xv=>tauStandard(xv, state.phi));
+
+  const allY = ysPost.concat(ysStd);
+  const yMin = Math.min(...allY)*0.6, yMax = Math.max(...allY)*1.6;
+
+  drawCurve(ctx, xs, ysStd, w,h,margin, xMin,xMax,yMin,yMax, '#E8A756');
+  drawCurve(ctx, xs, ysPost, w,h,margin, xMin,xMax,yMin,yMax, '#4FD8C4');
+  drawPoint(ctx, state.x, tauPostulate(state.x, state.phi, state.T), w,h,margin, xMin,xMax,yMin,yMax, '#4FD8C4');
+}
+
+function drawPlotPhi(){
+  const canvas = document.getElementById('plotPhi');
+  fitCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  const margin = drawLogLogAxes(ctx,w,h);
+
+  const pMin=1e-6, pMax=100;
+  const N=40;
+  const ps = Array.from({length:N}, (_,i)=> pMin*Math.pow(pMax/pMin, i/(N-1)));
+  const ysPost = ps.map(pv=>tauPostulate(state.x, pv, state.T));
+  const ysStd  = ps.map(pv=>tauStandard(state.x, pv));
+  const ysDP   = ps.map(()=>tauDP());
+
+  const allY = ysPost.concat(ysStd).concat(ysDP);
+  const yMin = Math.min(...allY)*0.6, yMax = Math.max(...allY)*1.6;
+
+  drawCurve(ctx, ps, ysDP, w,h,margin, pMin,pMax,yMin,yMax, '#C57DE0');
+  drawCurve(ctx, ps, ysStd, w,h,margin, pMin,pMax,yMin,yMax, '#E8A756');
+  drawCurve(ctx, ps, ysPost, w,h,margin, pMin,pMax,yMin,yMax, '#4FD8C4');
+  drawPoint(ctx, state.phi, tauPostulate(state.x, state.phi, state.T), w,h,margin, pMin,pMax,yMin,yMax, '#4FD8C4');
+}
+
+window.addEventListener('resize', render);
+render();
+loop();
+</script>
+</body>
+</html>
