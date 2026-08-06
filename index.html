@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>An Energy-Dissipation Threshold Model for Wave Function Collapse in Open Quantum Systems</title>
 
-    <!-- Meta-etiquetas Open Graph -->
     <meta property="og:title" content="An Energy-Dissipation Threshold Model for Wave Function Collapse in Open Quantum Systems">
     <meta property="og:description" content="A dynamical, objective reduction model where wave function collapse is driven by energy dissipation in open quantum systems.">
     <meta property="og:type" content="article">
     <meta name="twitter:card" content="summary_large_image">
 
-    <!-- Configuración e Integración de MathJax 3 -->
     <script>
         window.MathJax = {
             tex: {
@@ -27,7 +25,6 @@
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
-    <!-- Plotly.js CDN para gráficos interactivos -->
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
     <style>
@@ -293,9 +290,10 @@
                     </svg>
                     Guardar / Imprimir PDF
                 </button>
-                <a href="https://orcid.org/0009-0002-8611-3705" target="_blank" class="btn btn-outline">
-                    Perfil ORCID
-                </a>
+                <a href="https://orcid.org/my-orcid?orcid=0009-0001-1431-2449" target="_blank" class="btn btn-outline">
+	
+							Perfil ORCID
+			</a>
             </div>
         </header>
 
@@ -320,7 +318,6 @@
 
             <p>Donde $L_k$ son los operadores de salto asociados a la transferencia de energía y momento con el medidor, y $\gamma_k$ son las tasas de acoplamiento. Las coherencias cuánticas (términos fuera de la diagonal $\rho_{ij}$) decaen según $\rho_{ij}(t) = \rho_{ij}(0) e^{-\Gamma t}$.</p>
 
-            <!-- Gráfico Interactivo de Lindblad -->
             <div id="lindbladPlot" class="plot-container"></div>
 
             <h3>2.2. Condición del Umbral Energético Crítico</h3>
@@ -349,17 +346,16 @@
 
         <section>
             <h2>3. Derivación Analítica del Tiempo de Colapso</h2>
-            <p>Para una partícula puntual de masa $m$ en una superposición de dos posiciones separadas por una distancia $x$, sometida a un flujo de energía ambiental $\Phi_E$, la tasa de localización espacial por disipación es $\Lambda_{\text{dis}} = \frac{x^2 \sigma_{\text{tot}} \Phi_E}{\hbar}$.</p>
-            <p>La integral de disipación combinada con el umbral da como resultado la fórmula analítica explícita para el tiempo de colapso:</p>
+            <p>Para una partícula en una superposición de dos posiciones separadas por una distancia $x$, acoplada a un entorno a temperatura $T$ con longitud de coherencia térmica $x_0 = \frac{\hbar c}{k_B T}$, la potencia de disipación espacial es $P_{\text{dis}}(x) = \sigma_{\text{tot}} \Phi_E \left(\frac{x}{x_0}\right)^2$.</p>
+            <p>Sustituyendo $P_{\text{dis}}$ en el umbral de acción $\int_{0}^{\tau} P_{\text{dis}} dt' \cdot \tau_{\text{colapso}} = \frac{\hbar}{2}$, se obtiene la fórmula analítica explícita para el tiempo de colapso:</p>
 
-            $$\tau_{\text{colapso}}(x, \Phi_E) = \frac{1}{x} \frac{\hbar}{\sqrt{2 \sigma_{\text{tot}} \Phi_E}}$$
+            $$\tau_{\text{colapso}}(x, \Phi_E) = \frac{x_0}{x} \sqrt{\frac{\hbar}{2 \sigma_{\text{tot}} \Phi_E}}$$
 
-            <!-- Gráfico Interactivo de Tiempo de Colapso -->
             <div id="collapseTimePlot" class="plot-container"></div>
 
             <ul>
                 <li><strong>Proporcionalidad inversa a la distancia ($1/x$):</strong> Superposiciones macroscópicas colapsan de forma ultrarrápida.</li>
-                <li><strong>Dependencia de la Potencia Disipada ($1/\Phi_E$):</strong> Si el aislamiento es perfecto ($\Phi_E = 0$), el tiempo de colapso tiende a infinito ($\tau \to \infty$) y la superposición cuántica perdura indefectiblemente.</li>
+                <li><strong>Dependencia de la Potencia Disipada ($1/\sqrt{\Phi_E}$):</strong> Si el aislamiento es perfecto ($\Phi_E \to 0$), el tiempo de colapso tiende a infinito ($\tau \to \infty$) y la superposición cuántica perdura indefectiblemente.</li>
             </ul>
         </section>
 
@@ -392,18 +388,18 @@
                         </tr>
                         <tr>
                             <td><strong>Flujo Energético ($\Phi_E$)</strong></td>
-                            <td>$10^{-3} \, \text{W/m}^2$ (Tenue)</td>
+                            <td>$10^{-8} \, \text{W/m}^2$ (Vacío tenue)</td>
                             <td>$400 \, \text{W/m}^2$ (Radiación Térmica 300 K)</td>
                         </tr>
                         <tr>
                             <td><strong>Tiempo de Colapso ($\tau_{\text{col}}$)</strong></td>
-                            <td>$\sim 2400 \, \text{s}$ ($\approx 40 \, \text{min}$)</td>
-                            <td>$\sim 9.8 \times 10^{-25} \, \text{s}$</td>
+                            <td>$\sim 2151 \, \text{s}$ ($\approx 35.8 \, \text{min}$)</td>
+                            <td>$\sim 2.77 \times 10^{-8} \, \text{s}$ ($27.7 \, \text{ns}$)</td>
                         </tr>
                         <tr>
                             <td><strong>Efecto Observado</strong></td>
                             <td>Conserva coherencia (Patrón de interferencia)</td>
-                            <td>Colapso macroscópico instantáneo</td>
+                            <td>Colapso macroscópico ultrarrápido</td>
                         </tr>
                     </tbody>
                 </table>
@@ -472,7 +468,6 @@
         </footer>
     </div>
 
-    <!-- Script para renderizar las gráficas de Plotly.js -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -480,27 +475,30 @@
             const gridColor = isDarkMode ? '#333333' : '#dee2e6';
             const bgColor = isDarkMode ? '#1e1e1e' : '#f8f9fa';
 
-            // --- GRÁFICO 1: TIEMPO DE COLAPSO VS SEPARACIÓN ESPACIAL ---
             const hbar = 1.0545718e-34;
+            const c = 3.0e8;
+            const kB = 1.380649e-23;
+            const T = 300; // Kelvin
+            const x0 = (hbar * c) / (kB * T); // ~7.638e-6 m
+
             const distances = [];
             const tauElectron = [];
             const tauC60 = [];
             const tauThreshold = [];
 
-            // Generar puntos logarítmicos desde 10^-10 m hasta 10^-3 m
             for (let i = -10; i <= -3; i += 0.1) {
                 const x = Math.pow(10, i);
                 distances.push(x);
                 
-                // Electrón: sigma = 6.65e-29, Phi_E = 1e-3
-                const tauE = hbar / (x * Math.sqrt(2 * 6.65e-29 * 1e-3));
+                // Electrón: sigma = 6.65e-29, Phi_E = 1e-8 W/m2
+                const tauE = (x0 / x) * Math.sqrt(hbar / (2 * 6.65e-29 * 1e-8));
                 tauElectron.push(tauE);
 
-                // C60: sigma = 1e-18, Phi_E = 400
-                const tauC = hbar / (x * Math.sqrt(2 * 1e-18 * 400));
+                // C60: sigma = 1e-18, Phi_E = 400 W/m2
+                const tauC = (x0 / x) * Math.sqrt(hbar / (2 * 1e-18 * 400));
                 tauC60.push(tauC);
 
-                tauThreshold.push(1.0); // 1 segundo como umbral
+                tauThreshold.push(1.0);
             }
 
             const traceElectron = {
@@ -539,21 +537,16 @@
 
             Plotly.newPlot('collapseTimePlot', [traceElectron, traceC60, traceThreshold], layout1, {responsive: true});
 
-
-            // --- GRÁFICO 2: DINÁMICA DE LINDBLAD Y DECAIMIENTO DE COHERENCIA ---
             const times = [];
             const rho12 = [];
             const rho11 = [];
             const rho22 = [];
 
-            // Simulación simplificada de Lindblad + Transición Estocástica
             for (let t = 0; t <= 5; t += 0.05) {
                 times.push(t);
-                // Decaimiento exponencial del elemento fuera de la diagonal (Coherencia)
                 const coherence = Math.exp(-1.5 * t);
                 rho12.push(coherence);
 
-                // Evolución estocástica de poblaciones convergiendo a autoestado 1
                 const p1 = 0.5 + 0.5 * (1 - Math.exp(-1.2 * t)) + 0.04 * Math.sin(5 * t) * Math.exp(-0.8 * t);
                 const p2 = 1 - p1;
                 rho11.push(Math.min(1, Math.max(0, p1)));
