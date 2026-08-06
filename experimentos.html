@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelos de Colapso Cuántico y Protocolo Experimental</title>
+    <!-- MathJax para renderizado de ecuaciones -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #e2e8f0;
+            --accent-color: #38bdf8;
+            --border-color: #334155;
+            --table-header: #0f172a;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1, h2, h3 {
+            color: var(--accent-color);
+        }
+
+        nav a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            overflow-x: auto;
+            display: block;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--table-header);
+            color: var(--accent-color);
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .highlight {
+            border-left: 4px solid var(--accent-color);
+            padding-left: 15px;
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <nav>
+        <a href="index.html">&larr; Volver al Índice Principal (index.html)</a>
+    </nav>
+
+    <header>
+        <h1>Modelos de Colapso Cuántico y Validación Experimental</h1>
+        <p>Análisis comparativo de teorías de reducción de estados y propuesta de verificación en laboratorio.</p>
+    </header>
+
+    <section class="card">
+        <h2>1. Comparativa de Modelos de Colapso Cuántico</h2>
+        <p>Resumen de las principales propuestas teóricas para la transición cuántica-clásica:</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Modelo</th>
+                    <th>Mecanismo Causal</th>
+                    <th>Ecuación del Tiempo de Colapso (\(\tau\))</th>
+                    <th>Factor Escalar Crítico</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Diósi-Penrose (DP)</strong></td>
+                    <td>Auto-interacción y decoherencia por gravedad cuántica.</td>
+                    <td>$$\tau_{\text{DP}} \approx \frac{\hbar}{\Delta E_G}$$</td>
+                    <td>Masa del sistema (\(m^2\)) y geometría espaciotemporal.</td>
+                </tr>
+                <tr>
+                    <td><strong>CSL / GRW</strong></td>
+                    <td>Campo estocástico no lineal independiente del entorno.</td>
+                    <td>$$\tau_{\text{CSL}} \propto \frac{1}{\gamma N^2}$$</td>
+                    <td>Número de nucleones (\(N\)) y constante universal (\(\gamma\)).</td>
+                </tr>
+                <tr>
+                    <td><strong>Decoherencia Estándar</strong></td>
+                    <td>Entrelazamiento con grados de libertad del entorno.</td>
+                    <td>$$\tau_{\text{dec}} \propto \frac{1}{\Gamma_{\text{scattering}} x^2}$$</td>
+                    <td>Tasa de dispersión de fotones/partículas (\(\Gamma\)).</td>
+                </tr>
+                <tr>
+                    <td><strong>Disipación Energética (Propuesto)</strong></td>
+                    <td>Umbral de acción e intercambio térmico regulado.</td>
+                    <td>$$\tau_{\text{colapso}} = \frac{x_0}{x} \sqrt{\frac{\hbar}{2 \sigma_{\text{tot}} \Phi_E}}$$</td>
+                    <td>Flujo de energía (\(\Phi_E\)) y longitud térmica (\(x_0\)).</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="card">
+        <h2>2. Propuesta Experimental: Interferometría de Materia</h2>
+        <p>Diseño experimental para contrastar las predicciones del modelo de disipación energética frente a otros paradigmas:</p>
+        
+        <div class="highlight">
+            <h3>Protocolo en 3 Pasos:</h3>
+            <ol>
+                <li><strong>Aislamiento en Alto Vacío (UHV):**</strong> Se prepara un haz de macromoléculas (p. ej., Fullerenos \(C_{60}\)) enviadas a través de un interferómetro de Talbot-Lau.</li>
+                <li><strong>Modulación del Entorno (\(\Phi_E\)):**</strong> Se somete el área de interferencia a un campo irradiante controlado mediante láseres infrarrojos modulables para variar la densidad de flujo de energía \(\Phi_E\).</li>
+                <li><strong>Medición de Visibilidad:**</strong> Se registra la visibilidad del patrón de interferencia (\(V\)) en función del flujo irradiado:
+                    $$V(\Phi_E) = V_0 \cdot \exp\left(-\frac{t_{\text{vuelo}}}{\tau_{\text{colapso}}(\Phi_E)}\right)$$
+                </li>
+            </ol>
+        </div>
+
+        <h3>Criterio de Verificación:</h3>
+        <p>Si el decaimiento de la visibilidad responde rigurosamente a la relación proporcional a \(\frac{1}{\sqrt{\Phi_E}}\) y a la longitud de coherencia térmica \(x_0 = \frac{\hbar c}{k_B T}\), se valida la hipótesis del umbral de disipación frente a los modelos puramente gravitatorios o espontáneos.</p>
+    </section>
+
+    <section class="card">
+        <h2>3. Escenarios Alternativos de la Física</h2>
+        <h3>¿Qué ocurriría si la energía no estuviera cuantizada?</h3>
+        <ul>
+            <li><strong>Inestabilidad Atómica:**</strong> De acuerdo con el electrodinamismo clásico, los electrones acelerados alrededor del núcleo emitirían radiación electromagnética de forma continua (radiación de Larmor), colapsando hacia el núcleo en aproximadamente \(10^{-11}\) segundos.</li>
+            <li><strong>Catástrofe del Ultravioleta:**</strong> Un cuerpo negro emitiría una cantidad infinita de energía a frecuencias altas, impidiendo la existencia de equilibrio térmico en el universo.</li>
+            <li><strong>Ausencia de Estructura Molecular:**</strong> Sin niveles discretos de energía no existirían los enlaces químicos, la espectroscopía, ni la vida orgánica.</li>
+        </ul>
+
+        <h3>¿Qué ocurriría si el colapso cuántico no existiera?</h3>
+        <p>Si la evolución temporal de la materia fuera estrictamente unitaria a todas las escalas humanas (sin colapso ni decoherencia), los objetos cotidianos permanecerían acoplados en superposiciones macroscópicas. Medir un sistema simplemente entrelazaría al observador con el estado, derivando en la ramificación continua de estados clásicos incoherentes entre sí (Interpretación de Mundos Múltiples pura).</p>
+    </section>
+
+</div>
+
+</body>
+</html>
