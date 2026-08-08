@@ -24,242 +24,102 @@
         };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
     <style>
         :root {
-            --bg-color: #ffffff;
-            --text-color: #212529;
-            --accent-color: #0d6efd;
-            --accent-hover: #0b5ed7;
-            --card-bg: #f8f9fa;
-            --border-color: #dee2e6;
-            --code-bg: #e9ecef;
-            --heading-color: #1a1a1a;
-            --badge-bg: #e7f1ff;
-            --badge-text: #0d6efd;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #e2e8f0;
+            --text-dim: #94a3b8;
+            --accent-color: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --border-color: #334155;
+            --table-header: #0f172a;
+            --badge-bg: #16324a;
+            --badge-text: #7dd3fc;
+            --code-bg: #16233a;
         }
 
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #121212;
-                --text-color: #e0e0e0;
-                --accent-color: #3d8bfd;
-                --accent-hover: #0d6efd;
-                --card-bg: #1e1e1e;
-                --border-color: #333333;
-                --code-bg: #2d2d2d;
-                --heading-color: #ffffff;
-                --badge-bg: #1c2d42;
-                --badge-text: #6ea8fe;
-            }
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            line-height: 1.8;
+            line-height: 1.7;
             padding: 20px;
         }
 
-        .container {
-            max-width: 920px;
-            margin: 0 auto;
-            padding: 20px 0;
-        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px 0; }
 
-        header {
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 25px;
-            margin-bottom: 35px;
-        }
+        header { border-bottom: 2px solid var(--border-color); padding-bottom: 25px; margin-bottom: 30px; }
 
-        h1 {
-            font-size: 2.1rem;
-            color: var(--heading-color);
-            margin-bottom: 15px;
-            line-height: 1.3;
-        }
+        h1 { font-size: 2rem; color: var(--accent-color); margin-bottom: 15px; line-height: 1.3; }
+        h2 { font-size: 1.4rem; color: var(--accent-color); margin-top: 35px; margin-bottom: 15px;
+             border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        h3 { font-size: 1.1rem; color: var(--accent-color); margin-top: 25px; margin-bottom: 10px; }
 
-        h2 {
-            font-size: 1.45rem;
-            color: var(--heading-color);
-            margin-top: 35px;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-        }
+        .author-info { margin-bottom: 20px; }
+        .author-name { font-size: 1.15rem; font-weight: 600; color: var(--text-color); }
+        .affiliation { font-style: italic; color: var(--text-dim); font-size: 0.92rem; }
 
-        h3 {
-            font-size: 1.15rem;
-            color: var(--heading-color);
-            margin-top: 25px;
-            margin-bottom: 10px;
-        }
+        .meta-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+        .badge { background-color: var(--badge-bg); color: var(--badge-text); padding: 4px 10px;
+                 border-radius: 4px; font-size: 0.82rem; font-weight: 500; }
 
-        .author-info {
-            margin-bottom: 20px;
-        }
+        .actions-bar { display: flex; gap: 12px; margin: 25px 0 10px 0; flex-wrap: wrap; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 6px;
+               text-decoration: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; border: none;
+               transition: all 0.2s ease; }
+        .btn-primary { background-color: var(--accent-color); color: #0f172a !important; }
+        .btn-primary:hover { background-color: var(--accent-hover); }
+        .btn-outline { border: 1px solid var(--border-color); background-color: var(--card-bg); color: var(--text-color) !important; }
+        .btn-outline:hover { border-color: var(--accent-color); color: var(--accent-color) !important; }
 
-        .author-name {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--heading-color);
-        }
+        .abstract { background-color: var(--card-bg); border-left: 4px solid var(--accent-color);
+                    padding: 22px; margin-bottom: 30px; border-radius: 0 8px 8px 0; }
 
-        .affiliation {
-            font-style: italic;
-            color: #6c757d;
-            font-size: 0.95rem;
-        }
+        p { margin-bottom: 16px; text-align: justify; color: var(--text-color); }
+        ul, ol { margin-bottom: 18px; padding-left: 24px; }
+        li { margin-bottom: 8px; }
 
-        .meta-badges {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 12px;
-        }
+        .key-result { background-color: var(--card-bg); border: 1px solid var(--border-color);
+                       padding: 15px 20px; border-radius: 6px; margin: 20px 0; }
+        .caveat-note { background-color: var(--code-bg); border: 1px dashed var(--border-color);
+                        padding: 12px 16px; border-radius: 6px; margin: 14px 0; font-size: 0.88rem;
+                        color: var(--text-dim); }
 
-        .badge {
-            background-color: var(--badge-bg);
-            color: var(--badge-text);
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
+        .plot-container { width: 100%; height: 440px; margin: 25px 0; background-color: var(--card-bg);
+                           border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; }
+        .plot-label { font-size: 0.82rem; color: var(--text-dim); text-align: center; margin-top: -12px; margin-bottom: 20px; }
 
-        .actions-bar {
-            display: flex;
-            gap: 15px;
-            margin: 25px 0 10px 0;
-            flex-wrap: wrap;
-        }
+        .table-wrapper { overflow-x: auto; margin: 25px 0; }
+        table { width: 100%; border-collapse: collapse; background-color: var(--card-bg); font-size: 0.92rem; min-width: 560px; }
+        th, td { border: 1px solid var(--border-color); padding: 11px 14px; text-align: left; }
+        th { background-color: var(--table-header); color: var(--accent-color); }
 
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            font-size: 0.95rem;
-            cursor: pointer;
-            border: none;
-        }
+        .MathJax { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
 
-        .btn-primary {
-            background-color: var(--accent-color);
-            color: #ffffff !important;
-        }
+        footer { margin-top: 55px; padding-top: 22px; border-top: 1px solid var(--border-color);
+                 text-align: center; font-size: 0.85rem; color: var(--text-dim); }
 
-        .btn-primary:hover {
-            background-color: var(--accent-hover);
-        }
+        @media print { .actions-bar, footer, .plot-container { display: none !important; } }
 
-        .btn-outline {
-            border: 1px solid var(--border-color);
-            background-color: var(--card-bg);
-            color: var(--text-color) !important;
+        /* --- responsive --- */
+        @media (max-width: 720px) {
+            body { padding: 12px; }
+            h1 { font-size: 1.5rem; }
+            h2 { font-size: 1.2rem; }
+            .actions-bar { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+            .plot-container { height: 340px; padding: 6px; }
+            table { font-size: 0.82rem; }
+            th, td { padding: 8px 10px; }
         }
-
-        .btn-outline:hover {
-            border-color: var(--accent-color);
-            color: var(--accent-color) !important;
-        }
-
-        .abstract {
-            background-color: var(--card-bg);
-            border-left: 4px solid var(--accent-color);
-            padding: 25px;
-            margin-bottom: 35px;
-            border-radius: 0 8px 8px 0;
-        }
-
-        p {
-            margin-bottom: 18px;
-            text-align: justify;
-        }
-
-        ul, ol {
-            margin-bottom: 20px;
-            padding-left: 25px;
-        }
-
-        li {
-            margin-bottom: 8px;
-        }
-
-        .key-result {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 15px 20px;
-            border-radius: 6px;
-            margin: 20px 0;
-        }
-
-        .plot-container {
-            width: 100%;
-            height: 480px;
-            margin: 30px 0;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-            margin: 30px 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: var(--card-bg);
-            font-size: 0.95rem;
-        }
-
-        th, td {
-            border: 1px solid var(--border-color);
-            padding: 12px 15px;
-            text-align: left;
-        }
-
-        th {
-            background-color: var(--code-bg);
-            color: var(--heading-color);
-        }
-
-        .MathJax {
-            overflow-x: auto;
-            overflow-y: hidden;
-            max-width: 100%;
-        }
-
-        footer {
-            margin-top: 60px;
-            padding-top: 25px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
-
-        @media print {
-            .actions-bar, footer, .plot-container {
-                display: none !important;
-            }
+        @media (max-width: 420px) {
+            h1 { font-size: 1.3rem; }
+            .badge { font-size: 0.72rem; }
         }
     </style>
 </head>
@@ -268,19 +128,19 @@
     <div class="container">
         <header>
             <h1>An Energy-Dissipation Threshold Model for Wave Function Collapse in Open Quantum Systems</h1>
-            
+
             <div class="author-info">
                 <div class="author-name">Luis Alberto Ratia</div>
                 <div class="affiliation">Departamento de Ingeniería de Sistemas y Matemáticas</div>
-                
+
                 <div class="meta-badges">
-                    <span class="badge">ORCID:0009-0001-1431-2449</span>
+                    <span class="badge">ORCID: 0009-0002-8611-3705</span>
                     <span class="badge">Zenodo Preprint</span>
                     <span class="badge">Sistemas Cuánticos Abiertos</span>
                     <span class="badge">Licencia CC-BY 4.0</span>
                 </div>
             </div>
-            
+
             <div class="actions-bar">
                 <button onclick="window.print()" class="btn btn-primary">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -290,13 +150,9 @@
                     </svg>
                     Guardar / Imprimir PDF
                 </button>
-				<a href="experimentos.html" class="btn btn-outline">Ver Experimentos y Comparativa de Colapso Cuántico</a>
-				<a href="collapse_simulador.html" class="btn btn-outline">Simulador</a>
-
-                <a href="https://orcid.org/0009-0001-1431-2449" target="_blank" class="btn btn-outline">
-	
-							Perfil ORCID
-			</a>
+                <a href="experimentos.html" class="btn btn-outline">Ver Experimentos y Comparativa de Colapso Cuántico</a>
+                <a href="collapse_simulador.html" class="btn btn-outline">Simulador</a>
+                <a href="https://orcid.org/0009-0002-8611-3705" target="_blank" class="btn btn-outline">Perfil ORCID</a>
             </div>
         </header>
 
@@ -313,15 +169,13 @@
 
         <section>
             <h2>2. Formalismo Matemático Completo</h2>
-            
+
             <h3>2.1. Hamiltoniano del Sistema Abierto y Ecuación de Lindblad</h3>
             <p>Un sistema cuántico no aislado ($H_0$) acoplado a un entorno/medidor ($H_{\text{obs}}$) mediante un término de interacción $V_{\text{int}}$ se describe por la matriz de densidad $\rho(t)$ bajo la Ecuación Máster de Lindblad:</p>
 
             $$\frac{d\rho}{dt} = -\frac{i}{\hbar}[H_0, \rho] + \sum_k \gamma_k \left( L_k \rho L_k^\dagger - \frac{1}{2} \{ L_k^\dagger L_k, \rho \} \right)$$
 
             <p>Donde $L_k$ son los operadores de salto asociados a la transferencia de energía y momento con el medidor, y $\gamma_k$ son las tasas de acoplamiento. Las coherencias cuánticas (términos fuera de la diagonal $\rho_{ij}$) decaen según $\rho_{ij}(t) = \rho_{ij}(0) e^{-\Gamma t}$.</p>
-
-            <div id="lindbladPlot" class="plot-container"></div>
 
             <h3>2.2. Condición del Umbral Energético Crítico</h3>
             <p>Se define la energía disipada acumulada $E_{\text{dis}}(t)$ desde el sistema hacia el entorno como:</p>
@@ -338,7 +192,7 @@
             $$(n \cdot h\nu) \cdot \tau_{\text{colapso}} \approx \frac{h}{4\pi} \implies \tau_{\text{colapso}} \approx \frac{1}{4\pi n \nu}$$
 
             <div class="key-result">
-                <strong>Resultado Clave:</strong> La constante de Planck $h$ se cancela en la escala temporal del colapso, demostrando que el tiempo de reducción depende exclusivamente de la frecuencia física de la interacción ($\nu$) y del número de cuantos disipados ($n$).
+                <strong>Nota sobre este resultado:</strong> la constante de Planck $h$ se cancela algebraicamente en esta reescritura del umbral — una consecuencia directa de dividir dos cantidades que ya contenían $h$, no una predicción independiente del modelo. Lo que sí es útil: reexpresa el tiempo de colapso en términos de la frecuencia física de interacción ($\nu$) y el número de cuantos disipados ($n$), en lugar de la energía cruda.
             </div>
 
             <h3>2.4. Ecuación Estocástica de Schrödinger (SSE)</h3>
@@ -355,6 +209,7 @@
             $$\tau_{\text{colapso}}(x, \Phi_E) = \frac{x_0}{x} \sqrt{\frac{\hbar}{2 \sigma_{\text{tot}} \Phi_E}}$$
 
             <div id="collapseTimePlot" class="plot-container"></div>
+            <p class="plot-label">Curva calculada directamente con la fórmula anterior — mismos parámetros que la Tabla de la Sección 4.</p>
 
             <ul>
                 <li><strong>Proporcionalidad inversa a la distancia ($1/x$):</strong> Superposiciones macroscópicas colapsan de forma ultrarrápida.</li>
@@ -391,7 +246,7 @@
                         </tr>
                         <tr>
                             <td><strong>Flujo Energético ($\Phi_E$)</strong></td>
-                            <td>$10^{-8} \, \text{W/m}^2$ (Vacío tenue)</td>
+                            <td>$10^{-11} \, \text{W/m}^2$ (Vacío tenue)</td>
                             <td>$400 \, \text{W/m}^2$ (Radiación Térmica 300 K)</td>
                         </tr>
                         <tr>
@@ -443,6 +298,7 @@
                     </tbody>
                 </table>
             </div>
+            <p class="caveat-note">Nota: GRW y CSL (localización espontánea) no aparecen en esta tabla resumida; se tratan con más detalle en la comparativa de <a href="experimentos.html" style="color:var(--accent-color)">experimentos.html</a>.</p>
         </section>
 
         <section>
@@ -450,7 +306,7 @@
             <ul>
                 <li><strong>La Flecha del Tiempo y la Entropía:</strong> El colapso es la fuente microscópica de la irreversibilidad termodinámica. La información de fase perdida se transforma en entropía del entorno ($\Delta S = \Delta E_{\text{dis}} / T$).</li>
                 <li><strong>El Universo Clásico:</strong> El mundo cotidiano no es clásico por naturaleza intrínseca, sino porque está inmerso en un baño térmico incesante que "mide" los objetos de forma continua.</li>
-                <li><strong>Percepción y Mente Humana:</strong> La mente humana no origina el colapso mediante la conciencia. El cerebro es un procesador termodinámico que captura señales sensoriales cuya interacción ya disipó energía órdenes de magnitud por encima del umbral ($\Delta E_{\text{bio}} \gg \hbar/\tau$). La mente únicamente procesa el resultado colapsado.</li>
+                <li><strong>Percepción y Mente Humana:</strong> La mente humana no origina el colapso mediante la conciencia. El cerebro es un procesador termodinámico que captura señales sensoriales cuya interacción ya disipó energía órdenes de magnitud por encima del umbral ($\Delta E_{\text{bio}} \gg \hbar/\tau$). La mente únicamente procesa el resultado colapsado — no lo causa.</li>
             </ul>
         </section>
 
@@ -467,130 +323,61 @@
 
         <footer>
             <p>&copy; 2026 Luis Alberto Ratia — Publicado bajo Licencia Creative Commons CC-BY 4.0</p>
-            <p>Documento registrado y archivado en Zenodo con DOI inmutable.</p>
+            <p>Documento en proceso de registro en Zenodo. El DOI se enlazará aquí una vez asignado a la versión corregida.</p>
         </footer>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const fontColor = isDarkMode ? '#e0e0e0' : '#212529';
-            const gridColor = isDarkMode ? '#333333' : '#dee2e6';
-            const bgColor = isDarkMode ? '#1e1e1e' : '#f8f9fa';
+            const fontColor = '#e2e8f0';
+            const gridColor = '#334155';
+            const bgColor = '#1e293b';
 
             const hbar = 1.0545718e-34;
-            const c = 3.0e8;
+            const c = 2.9979e8;
             const kB = 1.380649e-23;
-            const T = 300; // Kelvin
-            const x0 = (hbar * c) / (kB * T); // ~7.638e-6 m
+            const T = 300;
+            const x0 = (hbar * c) / (kB * T);
 
             const distances = [];
             const tauElectron = [];
             const tauC60 = [];
-            const tauThreshold = [];
 
             for (let i = -10; i <= -3; i += 0.1) {
                 const x = Math.pow(10, i);
                 distances.push(x);
-                
-                // Electrón: sigma = 6.65e-29, Phi_E = 1e-8 W/m2
-                const tauE = (x0 / x) * Math.sqrt(hbar / (2 * 6.65e-29 * 1e-8));
+
+                // Electron: sigma = 6.65e-29 (Thomson), Phi_E = 1e-11 W/m^2
+                // -- corregido para coincidir con la Tabla 4 (2151 s a x=1um) --
+                const tauE = (x0 / x) * Math.sqrt(hbar / (2 * 6.65e-29 * 1e-11));
                 tauElectron.push(tauE);
 
-                // C60: sigma = 1e-18, Phi_E = 400 W/m2
+                // C60: sigma = 1e-18, Phi_E = 400 W/m2 (sin cambios, ya coincidía)
                 const tauC = (x0 / x) * Math.sqrt(hbar / (2 * 1e-18 * 400));
                 tauC60.push(tauC);
-
-                tauThreshold.push(1.0);
             }
 
             const traceElectron = {
-                x: distances,
-                y: tauElectron,
-                mode: 'lines',
-                name: 'Electrón Individual (Micro)',
-                line: { color: '#0d6efd', width: 3 }
+                x: distances, y: tauElectron, mode: 'lines',
+                name: 'Electrón Individual (Φ_E=10⁻¹¹ W/m²)',
+                line: { color: '#38bdf8', width: 3 }
             };
-
             const traceC60 = {
-                x: distances,
-                y: tauC60,
-                mode: 'lines',
-                name: 'Fullereno C60 (Mesoscópico)',
-                line: { color: '#dc3545', width: 3 }
-            };
-
-            const traceThreshold = {
-                x: distances,
-                y: tauThreshold,
-                mode: 'lines',
-                name: 'Umbral de Coherencia (1 s)',
-                line: { color: '#ffc107', width: 2, dash: 'dash' }
+                x: distances, y: tauC60, mode: 'lines',
+                name: 'Fullereno C60 (Φ_E=400 W/m²)',
+                line: { color: '#f87171', width: 3 }
             };
 
             const layout1 = {
-                title: { text: '<b>Tiempo de Colapso (τ) vs. Separación Espacial (x)</b>', font: { color: fontColor, size: 16 } },
+                title: { text: '<b>Tiempo de Colapso (τ) vs. Separación Espacial (x)</b>', font: { color: fontColor, size: 15 } },
                 xaxis: { title: 'Separación Espacial x (m)', type: 'log', color: fontColor, gridcolor: gridColor },
                 yaxis: { title: 'Tiempo de Colapso τ (s)', type: 'log', color: fontColor, gridcolor: gridColor },
-                paper_bgcolor: bgColor,
-                plot_bgcolor: bgColor,
-                legend: { font: { color: fontColor }, orientation: 'h', y: -0.25 },
-                margin: { t: 50, b: 80, l: 65, r: 30 }
+                paper_bgcolor: bgColor, plot_bgcolor: bgColor,
+                legend: { font: { color: fontColor, size: 11 }, orientation: 'h', y: -0.28 },
+                margin: { t: 45, b: 80, l: 60, r: 20 }
             };
 
-            Plotly.newPlot('collapseTimePlot', [traceElectron, traceC60, traceThreshold], layout1, {responsive: true});
-
-            const times = [];
-            const rho12 = [];
-            const rho11 = [];
-            const rho22 = [];
-
-            for (let t = 0; t <= 5; t += 0.05) {
-                times.push(t);
-                const coherence = Math.exp(-1.5 * t);
-                rho12.push(coherence);
-
-                const p1 = 0.5 + 0.5 * (1 - Math.exp(-1.2 * t)) + 0.04 * Math.sin(5 * t) * Math.exp(-0.8 * t);
-                const p2 = 1 - p1;
-                rho11.push(Math.min(1, Math.max(0, p1)));
-                rho22.push(Math.min(1, Math.max(0, p2)));
-            }
-
-            const traceRho12 = {
-                x: times,
-                y: rho12,
-                mode: 'lines',
-                name: 'Coherencia Cuántica |ρ₁₂| (Off-diagonal)',
-                line: { color: '#6f42c1', width: 3 }
-            };
-
-            const traceRho11 = {
-                x: times,
-                y: rho11,
-                mode: 'lines',
-                name: 'Población Autoestado 1 (ρ₁₁)',
-                line: { color: '#198754', width: 2, dash: 'dot' }
-            };
-
-            const traceRho22 = {
-                x: times,
-                y: rho22,
-                mode: 'lines',
-                name: 'Población Autoestado 2 (ρ₂₂)',
-                line: { color: '#fd7e14', width: 2, dash: 'dot' }
-            };
-
-            const layout2 = {
-                title: { text: '<b>Evolución Temporal de la Matriz de Densidad ρ(t)</b>', font: { color: fontColor, size: 16 } },
-                xaxis: { title: 'Tiempo Adimensional (t / τ_colapso)', color: fontColor, gridcolor: gridColor },
-                yaxis: { title: 'Magnitud de Elementos de ρ', color: fontColor, gridcolor: gridColor, range: [-0.05, 1.05] },
-                paper_bgcolor: bgColor,
-                plot_bgcolor: bgColor,
-                legend: { font: { color: fontColor }, orientation: 'h', y: -0.25 },
-                margin: { t: 50, b: 80, l: 65, r: 30 }
-            };
-
-            Plotly.newPlot('lindbladPlot', [traceRho12, traceRho11, traceRho22], layout2, {responsive: true});
+            Plotly.newPlot('collapseTimePlot', [traceElectron, traceC60], layout1, {responsive: true});
         });
     </script>
 </body>
